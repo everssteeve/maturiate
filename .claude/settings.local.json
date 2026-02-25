@@ -1,8 +1,39 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm install:*)",
-      "Bash(cd:*)"
+      "Read(*)",
+      "Write(*)",
+      "Edit(*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(mkdir:*)",
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(pnpm:*)",
+      "Bash(yarn:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git pull:*)",
+      "Bash(git checkout:*)",
+      "Bash(git branch:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "WebFetch(domain:*)",
+      "Skill(*)",
+      "Bash(claude mcp add context7 -- npx -y @upstash/context7-mcp)",
+      "Bash(claude mcp add playwright -- npx @playwright/mcp@latest)",
+      "Bash(git:*)",
+      "Bash(cd:*)",
+      "Bash(cd \"/c/Users/steeve.evers/OneDrive - CONSERTO/perso/AIAD/maturIAté\" && openspec status --change \"init-project\" --json 2>&1)",
+      "Bash(cd \"/c/Users/steeve.evers/OneDrive - CONSERTO/perso/AIAD/maturIAté\" && openspec instructions apply --change \"init-project\" --json 2>&1)",
+      "Bash(pnpm --version 2>&1 && node --version 2>&1)",
+      "Bash(cd \"/c/Users/steeve.evers/OneDrive - CONSERTO/perso/AIAD/maturIAté\" && CI=true pnpm install 2>&1)"
+    ],
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(sudo:*)",
+      "Bash(chmod 777:*)"
     ]
   }
 }

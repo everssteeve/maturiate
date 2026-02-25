@@ -82,3 +82,29 @@ L'identité de l'organisation est hashée avec `SHA-256(org_id + STATE_OF_IA_HAS
 | `member` | Consulte les résultats de son équipe uniquement |
 | `consultant` | Accès lecture seule à plusieurs organisations |
 | `super-admin` | Back-office AIAD uniquement (flag `users.isSuperAdmin`) |
+
+### Style visuel
+- Interface claire et minimaliste
+- [Mode sombre : oui/non pour le MVP]
+
+### Contraintes et politiques
+- NE JAMAIS exposer les clés API au client
+- [Autres contraintes spécifiques]
+
+### Dépendances
+- Préférer les composants existants plutôt que d'ajouter de nouvelles bibliothèques UI
+
+### Workflow de développement
+- À la fin de chaque développement impliquant l'interface graphique, tester avec playwright-skill
+- L'interface doit être responsive, fonctionnelle et répondre au besoin développé
+
+### Context7
+Utilise toujours context7 lorsque tu as besoin de :
+- Génération de code
+- Étapes de configuration ou d'installation
+- Documentation de bibliothèque/API
+
+Cela signifie que tu dois automatiquement utiliser les outils MCP Context7 pour résoudre l'identifiant de bibliothèque et obtenir la documentation sans que je le demande explicitement.
+
+### Langue
+Toutes les spécifications doivent être rédigées en français.
