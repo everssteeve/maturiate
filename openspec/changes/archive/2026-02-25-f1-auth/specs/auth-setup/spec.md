@@ -1,4 +1,4 @@
-## ADDED Requirements
+## MODIFIED Requirements
 
 ### Requirement: Better Auth configured with Drizzle adapter
 The system SHALL configure Better Auth with the Drizzle ORM adapter, storing auth data (sessions, accounts, verifications) in the same PostgreSQL database. The configuration SHALL include the Magic Link plugin with Resend email integration.
@@ -20,28 +20,3 @@ The system SHALL configure Better Auth with the Drizzle ORM adapter, storing aut
 - **THEN** Google social provider MUST be available for sign-in
 - **WHEN** Microsoft OAuth environment variables are defined (`MICROSOFT_CLIENT_ID`, `MICROSOFT_CLIENT_SECRET`)
 - **THEN** Microsoft social provider MUST be available for sign-in
-
-### Requirement: Auth API route handler
-The system SHALL expose Better Auth endpoints via a Next.js catch-all API route.
-
-#### Scenario: Auth route handler exists
-- **WHEN** a request is made to `/api/auth/*`
-- **THEN** it MUST be handled by the Better Auth route handler in `src/app/api/auth/[...all]/route.ts`
-
-### Requirement: Session helper for Server Components
-The system SHALL provide a helper to retrieve the current user session in Server Components and Server Actions.
-
-#### Scenario: Session retrieval in Server Component
-- **WHEN** calling `auth.api.getSession({ headers: await headers() })` in a Server Component
-- **THEN** it MUST return the session object if authenticated, or `null` if not
-
-### Requirement: Auth middleware for protected routes
-The system SHALL include a Next.js middleware that protects dashboard routes by redirecting unauthenticated users to the login page.
-
-#### Scenario: Unauthenticated user accessing dashboard
-- **WHEN** an unauthenticated user navigates to any route under `/(dashboard)/`
-- **THEN** they MUST be redirected to `/login`
-
-#### Scenario: Authenticated user accessing dashboard
-- **WHEN** an authenticated user navigates to any route under `/(dashboard)/`
-- **THEN** they MUST be allowed through without redirect
