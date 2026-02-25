@@ -285,6 +285,27 @@ StateOfIA_Snapshot (données anonymisées pour le rapport annuel)
 | Ré-identification indirecte dans le State of IA | Moyen | Seuil minimum de 5 organisations par segment. Pas de croisement de dimensions permettant d'isoler une organisation. Revue manuelle par l'équipe AIAD avant publication. |
 | Conformité RGPD sur les données agrégées | Haut | Opt-in explicite, anonymisation irréversible (hash), droit de retrait à tout moment (les snapshots déjà extraits restent anonymes mais l'organisation ne contribue plus aux suivants). Consultation juridique recommandée avant le lancement du State of IA. |
 
+## Ordre de développement des fonctionnalités V1
+
+Les fonctionnalités F1 à F10 ne sont pas indépendantes. L'ordre de développement est dicté par leurs **dépendances de données** : on ne peut pas créer de diagnostic sans équipe, pas de campagne sans diagnostic, pas de dashboard sans données.
+
+```
+F1 → F2 → F3 → F4 → F5 → F6 ──→ F8
+                          ↘       ↗
+                           F7 → F9 → F10
+```
+
+| Phase | Fonctionnalités | Dépend de | Parallélisable |
+|-------|----------------|-----------|----------------|
+| 1 — Fondations | F1 (Auth), F2 (Organisations), F3 (Équipes) | — → F1 → F2 | Non (séquentiel) |
+| 2 — Core | F4 (Diagnostic / Quiz) | F3 | Non |
+| 3 — Orchestration | F5 (Campagnes) | F4 + F2/F3 | Non |
+| 4 — Visualisation | F6 (Dashboard Organisation), F7 (Dashboard Équipe) | F4 + F5 | Oui (F6 ∥ F7) |
+| 5 — Transversal | F8 (Vue Consultant), F9 (Partage de Résultats) | F6 / F6+F7 | Oui (F8 ∥ F9) |
+| 6 — Avancé | F10 (State of IA) | F2 + F4 + F6 | Non |
+
+> **Note** : F10 (State of IA) est la fonctionnalité la plus complexe et la moins urgente pour un MVP utilisable. Elle peut être reportée en fin de V1 sans bloquer les autres fonctionnalités.
+
 ## Roadmap indicative
 
 ### V1 — MVP (périmètre de ce PRD)
