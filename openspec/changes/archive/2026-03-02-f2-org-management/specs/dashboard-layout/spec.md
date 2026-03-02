@@ -1,4 +1,4 @@
-## ADDED Requirements
+## MODIFIED Requirements
 
 ### Requirement: Layout authentifié avec header utilisateur
 Le système SHALL afficher un layout pour les routes `(dashboard)` incluant un header avec les informations de l'utilisateur connecté et un sélecteur d'organisation.
@@ -26,17 +26,3 @@ Le système SHALL afficher un layout pour les routes `(dashboard)` incluant un h
 #### Scenario: Header sans contexte d'organisation
 - **WHEN** un utilisateur authentifié accède à `/orgs` ou `/profile` (pas de contexte orgId)
 - **THEN** le header MUST ne pas afficher le composant OrgSwitcher
-
-### Requirement: Layout auth minimaliste
-Le système SHALL afficher un layout minimal pour les routes `(auth)` (login, invitation).
-
-#### Scenario: Layout de la page de connexion
-- **WHEN** un utilisateur accède à `/login` ou `/invite/[token]`
-- **THEN** le layout MUST être centré verticalement et horizontalement, avec le logo maturIAté en haut, sans sidebar ni navigation
-
-### Requirement: Le header affiche le titre maturIAté
-Le système SHALL afficher le nom de la plateforme dans le header du layout authentifié.
-
-#### Scenario: Logo/titre dans le header
-- **WHEN** un utilisateur authentifié accède à une page du dashboard
-- **THEN** le header MUST afficher « maturIAté » à gauche, cliquable, redirigeant vers `/orgs`

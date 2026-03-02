@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { LogOut, User } from "lucide-react";
 
 import { signOut, useSession } from "@/lib/auth/client";
@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { OrgSwitcher } from "@/components/org-switcher";
 
 function UserAvatar({ name, image }: { name: string; image?: string | null }) {
   if (image) {
@@ -42,11 +43,17 @@ function UserAvatar({ name, image }: { name: string; image?: string | null }) {
   );
 }
 
-export function Header() {
+interface HeaderProps {
+  organizations?: { id: string; name: string; logo: string | null }[];
+}
+
+export function Header({ organizations }: HeaderProps) {
   const router = useRouter();
+  const params = useParams();
   const { data: session } = useSession();
 
   const user = session?.user;
+  const orgId = params?.orgId as string | undefined;
 
   async function handleSignOut() {
     await signOut({
@@ -61,9 +68,18 @@ export function Header() {
   return (
     <header className="border-b bg-background">
       <div className="flex h-14 items-center justify-between px-4 sm:px-6">
-        <Link href="/orgs" className="text-lg font-bold tracking-tight">
-          maturIAté
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link href="/orgs" className="text-lg font-bold tracking-tight">
+            maturIAté
+          </Link>
+
+          {orgId && organizations && organizations.length > 0 && (
+            <>
+              <span className="text-muted-foreground">/</span>
+              <OrgSwitcher organizations={organizations} currentOrgId={orgId} />
+            </>
+          )}
+        </div>
 
         {user && (
           <DropdownMenu>
