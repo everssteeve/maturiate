@@ -22,8 +22,8 @@ export const orgSizeEnum = pgEnum("org_size", ["1-10", "11-50", "51-200", "201-1
 // ── Users ──────────────────────────────────────────
 
 export const users = pgTable("users", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  name: text("name").notNull(),
+  id: text("id").primaryKey(),
+  name: text("name").notNull().default(""),
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").notNull().default(false),
   image: text("image"),
@@ -51,7 +51,7 @@ export const organizations = pgTable("organizations", {
 
 export const memberships = pgTable("memberships", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   orgId: uuid("org_id")
@@ -78,7 +78,7 @@ export const teamMembers = pgTable("team_members", {
   teamId: uuid("team_id")
     .notNull()
     .references(() => teams.id, { onDelete: "cascade" }),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
 });
@@ -91,7 +91,7 @@ export const campaigns = pgTable("campaigns", {
   orgId: uuid("org_id")
     .notNull()
     .references(() => organizations.id, { onDelete: "cascade" }),
-  createdBy: uuid("created_by")
+  createdBy: text("created_by")
     .notNull()
     .references(() => users.id),
   status: campaignStatusEnum("status").notNull().default("draft"),
@@ -123,7 +123,7 @@ export const diagnostics = pgTable("diagnostics", {
     .notNull()
     .references(() => teams.id, { onDelete: "cascade" }),
   campaignId: uuid("campaign_id").references(() => campaigns.id, { onDelete: "set null" }),
-  filledBy: uuid("filled_by")
+  filledBy: text("filled_by")
     .notNull()
     .references(() => users.id),
   answers: jsonb("answers").notNull().$type<Record<string, number>>(),
@@ -146,7 +146,7 @@ export const shareLinks = pgTable("share_links", {
   orgId: uuid("org_id")
     .notNull()
     .references(() => organizations.id, { onDelete: "cascade" }),
-  createdBy: uuid("created_by")
+  createdBy: text("created_by")
     .notNull()
     .references(() => users.id),
   expiresAt: timestamp("expires_at"),
@@ -163,7 +163,7 @@ export const invitations = pgTable("invitations", {
     .references(() => organizations.id, { onDelete: "cascade" }),
   role: memberRoleEnum("role").notNull(),
   token: text("token").notNull().unique(),
-  invitedBy: uuid("invited_by")
+  invitedBy: text("invited_by")
     .notNull()
     .references(() => users.id),
   acceptedAt: timestamp("accepted_at"),
@@ -191,7 +191,7 @@ export const stateOfIaReports = pgTable("state_of_ia_reports", {
   year: integer("year").notNull().unique(),
   content: jsonb("content").notNull(),
   publishedAt: timestamp("published_at"),
-  createdBy: uuid("created_by")
+  createdBy: text("created_by")
     .notNull()
     .references(() => users.id),
   createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -201,8 +201,8 @@ export const stateOfIaReports = pgTable("state_of_ia_reports", {
 // ── Better Auth Tables ─────────────────────────────
 
 export const sessions = pgTable("sessions", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
+  id: text("id").primaryKey(),
+  userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   token: text("token").notNull().unique(),
@@ -214,8 +214,8 @@ export const sessions = pgTable("sessions", {
 });
 
 export const accounts = pgTable("accounts", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
+  id: text("id").primaryKey(),
+  userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   accountId: text("account_id").notNull(),
@@ -232,7 +232,7 @@ export const accounts = pgTable("accounts", {
 });
 
 export const verifications = pgTable("verifications", {
-  id: uuid("id").primaryKey().defaultRandom(),
+  id: text("id").primaryKey(),
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
   expiresAt: timestamp("expires_at").notNull(),
