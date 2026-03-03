@@ -5,12 +5,16 @@ import { auth } from "@/lib/auth";
 import { getOrganization } from "@/lib/queries/organizations";
 import { listOrganizationMembers } from "@/lib/queries/members";
 import { listPendingInvitations } from "@/lib/queries/invitations";
+import { listTeams, listUserTeamIds } from "@/lib/queries/teams";
+import { listBonusQuestions } from "@/lib/queries/diagnostics";
 import { requireRole } from "@/lib/permissions";
 import { OrgSettingsForm } from "@/components/org-settings-form";
 import { MembersList } from "@/components/members-list";
 import { MemberInviteForm } from "@/components/member-invite-form";
 import { PendingInvitationsList } from "@/components/pending-invitations-list";
 import { StateOfIaOptInCard } from "@/components/state-of-ia-opt-in-card";
+import { TeamsSection } from "@/components/teams-section";
+import { BonusQuestionsManager } from "@/components/bonus-questions-manager";
 
 export default async function OrgSettingsPage({
   params,
@@ -25,14 +29,29 @@ export default async function OrgSettingsPage({
   if (!org) throw new Error("Organisation introuvable.");
 
   let isAdmin = false;
+  let isManager = false;
   try {
     await requireRole(orgId, "admin");
     isAdmin = true;
   } catch {
-    // not admin — read-only view
+    try {
+      await requireRole(orgId, "manager");
+      isManager = true;
+    } catch {
+      // member or consultant — read-only view
+    }
   }
 
-  const members = await listOrganizationMembers(orgId);
+  const [members, teamsList, bonusQuestionsList] = await Promise.all([
+    listOrganizationMembers(orgId),
+    listTeams(orgId),
+    isAdmin ? listBonusQuestions(orgId) : Promise.resolve([]),
+  ]);
+
+  // For managers, determine which teams they belong to
+  const managedTeamIds = isManager
+    ? await listUserTeamIds(session.user.id, orgId)
+    : [];
 
   return (
     <div className="space-y-6">
@@ -57,6 +76,24 @@ export default async function OrgSettingsPage({
 
           <PendingInvitationsSection orgId={orgId} />
         </>
+      )}
+
+      <TeamsSection
+        orgId={orgId}
+        teams={teamsList}
+        isAdmin={isAdmin}
+        isManager={isManager}
+        managedTeamIds={managedTeamIds}
+      />
+
+      {isAdmin && (
+        <BonusQuestionsManager
+          orgId={orgId}
+          questions={bonusQuestionsList.map((q) => ({
+            ...q,
+            options: q.options as string[],
+          }))}
+        />
       )}
 
       <StateOfIaOptInCard
