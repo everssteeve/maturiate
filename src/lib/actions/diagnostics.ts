@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { db } from "@/lib/db";
-import { diagnostics, teams, bonusQuestions } from "@/lib/db/schema";
+import { diagnostics, teams, campaigns, bonusQuestions } from "@/lib/db/schema";
 import { requireRole } from "@/lib/permissions";
 import { computeScores } from "@/lib/scoring";
 import { QUESTIONS } from "@/data/questions";
@@ -74,6 +74,35 @@ export async function submitDiagnostic(input: {
 
   if (!team) {
     return { error: "Équipe introuvable." };
+  }
+
+  // Validate campaign if provided
+  if (parsed.campaignId) {
+    const [campaign] = await db
+      .select()
+      .from(campaigns)
+      .where(and(eq(campaigns.id, parsed.campaignId), eq(campaigns.orgId, parsed.orgId)));
+
+    if (!campaign) {
+      return { error: "Campagne introuvable." };
+    }
+
+    if (campaign.status !== "active") {
+      return { error: "La campagne n'est pas active." };
+    }
+
+    // Check uniqueness: one diagnostic per team per campaign
+    const [existingDiag] = await db
+      .select({ id: diagnostics.id })
+      .from(diagnostics)
+      .where(
+        and(eq(diagnostics.teamId, parsed.teamId), eq(diagnostics.campaignId, parsed.campaignId)),
+      )
+      .limit(1);
+
+    if (existingDiag) {
+      return { error: "Un diagnostic existe déjà pour cette équipe dans cette campagne." };
+    }
   }
 
   // Validate all 14 core questions are answered

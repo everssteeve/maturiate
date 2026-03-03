@@ -1,7 +1,7 @@
 ## ADDED Requirements
 
 ### Requirement: Soumission d'un diagnostic par un admin ou manager
-Le système DOIT permettre à un utilisateur ayant le rôle `admin` ou `manager` dans l'organisation de soumettre un diagnostic pour une équipe de cette organisation.
+Le système DOIT permettre à un utilisateur ayant le rôle `admin` ou `manager` dans l'organisation de soumettre un diagnostic pour une équipe de cette organisation. Le diagnostic PEUT optionnellement être lié à une campagne via un paramètre `campaignId`.
 
 #### Scenario: Soumission réussie par un admin
 - **WHEN** un admin soumet un diagnostic avec 14 réponses core valides pour une équipe de son organisation
@@ -18,6 +18,18 @@ Le système DOIT permettre à un utilisateur ayant le rôle `admin` ou `manager`
 #### Scenario: Soumission refusée pour une équipe d'une autre organisation
 - **WHEN** un admin tente de soumettre un diagnostic pour une équipe qui n'appartient pas à son organisation
 - **THEN** le système retourne une erreur "Forbidden"
+
+#### Scenario: Soumission avec campaignId valide
+- **WHEN** un admin soumet un diagnostic avec un `campaignId` correspondant à une campagne active de l'organisation
+- **THEN** le diagnostic est créé avec `campaign_id` renseigné et lié à la campagne
+
+#### Scenario: Soumission refusée si la campagne n'est pas active
+- **WHEN** un admin soumet un diagnostic avec un `campaignId` correspondant à une campagne en statut `draft` ou `closed`
+- **THEN** le système retourne une erreur indiquant que la campagne n'est pas active
+
+#### Scenario: Soumission refusée si doublon équipe-campagne
+- **WHEN** un admin soumet un diagnostic pour une équipe qui a déjà un diagnostic pour cette campagne
+- **THEN** le système retourne une erreur indiquant qu'un diagnostic existe déjà pour cette équipe dans cette campagne
 
 ### Requirement: Validation des réponses à la soumission
 Le système DOIT valider que toutes les 14 questions core ont une réponse valide (entier entre 1 et 4) avant de persister le diagnostic.
@@ -42,11 +54,15 @@ Le système DOIT calculer automatiquement les scores par dimension, le score glo
 - **THEN** la ligne créée en base contient `dimensionScores`, `globalScore` et `globalLevel` calculés correctement
 
 ### Requirement: Support du diagnostic ad hoc
-Le système DOIT permettre la soumission d'un diagnostic sans campagne associée (`campaignId: null`). Le champ `campaignId` est optionnel.
+Le système DOIT permettre la soumission d'un diagnostic sans campagne associée (`campaignId: null`). Le champ `campaignId` est optionnel. Plusieurs diagnostics ad hoc peuvent être soumis pour la même équipe sans contrainte d'unicité.
 
 #### Scenario: Diagnostic ad hoc
 - **WHEN** un diagnostic est soumis sans `campaignId`
 - **THEN** le diagnostic est créé avec `campaignId` à null
+
+#### Scenario: Soumission ad hoc multiple pour une même équipe
+- **WHEN** un admin soumet deux diagnostics ad hoc (sans campaignId) pour la même équipe
+- **THEN** les deux diagnostics sont créés sans erreur (pas de contrainte d'unicité sur les ad hoc)
 
 ### Requirement: Horodatage du diagnostic
 Le système DOIT enregistrer `completedAt` au moment de la soumission. Le champ `startedAt` est optionnel et peut être fourni par le client pour mesurer la durée du quiz.

@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "unique_team_campaign" ON "diagnostics" USING btree ("team_id","campaign_id") WHERE campaign_id IS NOT NULL;

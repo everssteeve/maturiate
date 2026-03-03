@@ -8,8 +8,9 @@ import {
   boolean,
   pgEnum,
   real,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 
 // ── Enums ──────────────────────────────────────────
 
@@ -117,24 +118,32 @@ export const bonusQuestions = pgTable("bonus_questions", {
 
 // ── Diagnostics ────────────────────────────────────
 
-export const diagnostics = pgTable("diagnostics", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  teamId: uuid("team_id")
-    .notNull()
-    .references(() => teams.id, { onDelete: "cascade" }),
-  campaignId: uuid("campaign_id").references(() => campaigns.id, { onDelete: "set null" }),
-  filledBy: text("filled_by")
-    .notNull()
-    .references(() => users.id),
-  answers: jsonb("answers").notNull().$type<Record<string, number>>(),
-  bonusAnswers: jsonb("bonus_answers").$type<Record<string, number>>(),
-  dimensionScores: jsonb("dimension_scores").notNull().$type<Record<string, number>>(),
-  globalScore: real("global_score").notNull(),
-  globalLevel: integer("global_level").notNull(),
-  startedAt: timestamp("started_at"),
-  completedAt: timestamp("completed_at").notNull().defaultNow(),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+export const diagnostics = pgTable(
+  "diagnostics",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    teamId: uuid("team_id")
+      .notNull()
+      .references(() => teams.id, { onDelete: "cascade" }),
+    campaignId: uuid("campaign_id").references(() => campaigns.id, { onDelete: "set null" }),
+    filledBy: text("filled_by")
+      .notNull()
+      .references(() => users.id),
+    answers: jsonb("answers").notNull().$type<Record<string, number>>(),
+    bonusAnswers: jsonb("bonus_answers").$type<Record<string, number>>(),
+    dimensionScores: jsonb("dimension_scores").notNull().$type<Record<string, number>>(),
+    globalScore: real("global_score").notNull(),
+    globalLevel: integer("global_level").notNull(),
+    startedAt: timestamp("started_at"),
+    completedAt: timestamp("completed_at").notNull().defaultNow(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("unique_team_campaign")
+      .on(table.teamId, table.campaignId)
+      .where(sql`campaign_id IS NOT NULL`),
+  ],
+);
 
 // ── Share Links ────────────────────────────────────
 
