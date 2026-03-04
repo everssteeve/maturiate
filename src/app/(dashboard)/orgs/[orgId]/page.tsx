@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { Settings, Megaphone, Lock } from "lucide-react";
+import { Settings, Megaphone, Lock, BarChart3, ArrowRight } from "lucide-react";
 import { and, eq } from "drizzle-orm";
 
 import { auth } from "@/lib/auth";
@@ -9,9 +9,12 @@ import { db } from "@/lib/db";
 import { memberships, teamMembers, teams } from "@/lib/db/schema";
 import { getOrganization } from "@/lib/queries/organizations";
 import { getOrgDashboardData } from "@/lib/queries/org-dashboard";
+import { getLatestPublishedYear, getBenchmarkPercentiles } from "@/lib/queries/state-of-ia";
+import { hashOrganization } from "@/lib/utils/anonymize";
 import { listShareLinksByTarget } from "@/lib/queries/share-links";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { OrgDashboard } from "@/components/dashboard/org-dashboard";
 import { ShareButton } from "@/components/share/share-button";
 
@@ -85,6 +88,25 @@ export default async function OrgPage({
     ? await listShareLinksByTarget(orgId, "org", orgId)
     : [];
 
+  // Benchmark card (only for opt-in orgs with published report)
+  let benchmarkPercentile: number | null = null;
+  let benchmarkTotalOrgs: number | null = null;
+  if (org.optInStateOfIa) {
+    const latestYear = await getLatestPublishedYear();
+    if (latestYear) {
+      try {
+        const orgHash = hashOrganization(orgId);
+        const percentiles = await getBenchmarkPercentiles(latestYear, orgHash);
+        if (percentiles) {
+          benchmarkPercentile = percentiles.globalPercentile;
+          benchmarkTotalOrgs = percentiles.totalOrganizations;
+        }
+      } catch {
+        // Salt not configured — skip benchmark
+      }
+    }
+  }
+
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
@@ -123,6 +145,33 @@ export default async function OrgPage({
       </div>
 
       <OrgDashboard orgId={orgId} data={data} />
+
+      {/* Benchmark card for opt-in orgs */}
+      {benchmarkPercentile != null && (
+        <Card className="mt-6">
+          <CardContent className="flex items-center gap-6 py-6">
+            <BarChart3 className="size-10 shrink-0 text-primary" />
+            <div className="flex-1 space-y-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-semibold">Mon positionnement — State of IA</p>
+                  <p className="text-sm text-muted-foreground">
+                    Vous êtes au {benchmarkPercentile}e percentile sur {benchmarkTotalOrgs}{" "}
+                    organisations
+                  </p>
+                </div>
+                <Button variant="outline" size="sm" asChild>
+                  <Link href={`/orgs/${orgId}/benchmark`}>
+                    Voir le détail
+                    <ArrowRight className="ml-2 size-4" />
+                  </Link>
+                </Button>
+              </div>
+              <Progress value={benchmarkPercentile} className="h-2" />
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
