@@ -14,13 +14,13 @@ export async function listCampaigns(orgId: string) {
       createdAt: campaigns.createdAt,
       totalTeams: sql<number>`(
         SELECT count(*)::int FROM teams t
-        WHERE t.org_id = ${campaigns.orgId}
+        WHERE t.org_id = campaigns.org_id
       )`,
       respondedTeams: sql<number>`(
         SELECT count(DISTINCT d.team_id)::int FROM diagnostics d
         INNER JOIN teams t ON d.team_id = t.id
-        WHERE d.campaign_id = ${campaigns.id}
-          AND t.org_id = ${campaigns.orgId}
+        WHERE d.campaign_id = campaigns.id
+          AND t.org_id = campaigns.org_id
       )`,
     })
     .from(campaigns)

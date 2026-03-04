@@ -6,6 +6,8 @@ import { campaigns, teams, diagnostics, teamMembers, memberships, users } from "
 import { resend } from "@/lib/email";
 import { CampaignReminderEmail } from "@/lib/email/templates/campaign-reminder";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: Request) {
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {

@@ -156,12 +156,17 @@ export async function inviteMember(_prev: unknown, formData: FormData) {
 
   const inviteUrl = `${getBaseUrl()}/invite/${token}`;
 
-  await resend.emails.send({
+  const { error: emailError } = await resend.emails.send({
     from: process.env.EMAIL_FROM || "maturIAté <onboarding@resend.dev>",
     to: parsed.data.email,
     subject: `Invitation à rejoindre ${org.name} — maturIAté`,
     react: InvitationEmail({ orgName: org.name, role: parsed.data.role, inviteUrl }),
   });
+
+  if (emailError) {
+    console.error("Resend error:", emailError);
+    return { error: { email: [`Échec de l'envoi de l'email : ${emailError.message}`] } };
+  }
 
   revalidatePath(`/orgs/${parsed.data.orgId}/settings`);
   return { success: true };
@@ -202,12 +207,17 @@ export async function resendInvitation(input: { orgId: string; invitationId: str
 
   const inviteUrl = `${getBaseUrl()}/invite/${newToken}`;
 
-  await resend.emails.send({
+  const { error: emailError } = await resend.emails.send({
     from: process.env.EMAIL_FROM || "maturIAté <onboarding@resend.dev>",
     to: invitation.email,
     subject: `Invitation à rejoindre ${org.name} — maturIAté`,
     react: InvitationEmail({ orgName: org.name, role: invitation.role, inviteUrl }),
   });
+
+  if (emailError) {
+    console.error("Resend error:", emailError);
+    return { error: `Échec de l'envoi de l'email : ${emailError.message}` };
+  }
 
   revalidatePath(`/orgs/${parsed.orgId}/settings`);
   return { success: true };
