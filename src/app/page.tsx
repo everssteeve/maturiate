@@ -1,12 +1,32 @@
-export default function Home() {
-  return (
-    <div className="flex min-h-screen items-center justify-center">
-      <main className="flex flex-col items-center gap-4 text-center">
-        <h1 className="text-4xl font-bold tracking-tight">maturIAté</h1>
-        <p className="text-lg text-muted-foreground">
-          Plateforme de diagnostic et suivi de maturité IA
-        </p>
-      </main>
-    </div>
-  );
+import type { Metadata } from "next";
+import { headers } from "next/headers";
+
+import { auth } from "@/lib/auth";
+import { getHomepageSummary } from "@/lib/queries/homepage";
+import { LandingPage } from "@/components/landing/landing-page";
+import { AuthenticatedHomepage } from "@/components/homepage/authenticated-homepage";
+
+export const metadata: Metadata = {
+  title: "maturIAté — Mesurez la maturité IA de vos équipes",
+  description:
+    "Diagnostiquez, suivez et comparez l'adoption de l'IA dans vos équipes de développement. Campagnes de diagnostic, dashboards, benchmark anonymisé.",
+  openGraph: {
+    title: "maturIAté — Mesurez la maturité IA de vos équipes",
+    description:
+      "Diagnostiquez, suivez et comparez l'adoption de l'IA dans vos équipes de développement.",
+    type: "website",
+    locale: "fr_FR",
+  },
+};
+
+export default async function Home() {
+  const session = await auth.api.getSession({ headers: await headers() });
+
+  if (!session) {
+    return <LandingPage />;
+  }
+
+  const summary = await getHomepageSummary(session.user.id);
+
+  return <AuthenticatedHomepage summary={summary} />;
 }
