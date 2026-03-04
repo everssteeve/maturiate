@@ -4,7 +4,7 @@ import { magicLink } from "better-auth/plugins";
 
 import { db } from "@/lib/db";
 import * as schema from "@/lib/db/schema";
-import { resend } from "@/lib/email";
+import { getResend } from "@/lib/email";
 import { MagicLinkEmail } from "@/lib/email/templates/magic-link";
 
 const socialProviders: Record<string, { clientId: string; clientSecret: string }> = {};
@@ -35,7 +35,7 @@ export const auth = betterAuth({
   plugins: [
     magicLink({
       sendMagicLink: async ({ email, url }) => {
-        await resend.emails.send({
+        await getResend().emails.send({
           from: process.env.EMAIL_FROM || "maturIAté <onboarding@resend.dev>",
           to: email,
           subject: "Votre lien de connexion — maturIAté",

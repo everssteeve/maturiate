@@ -11,7 +11,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { invitations, memberships, organizations, users } from "@/lib/db/schema";
 import { requireRole } from "@/lib/permissions";
-import { resend } from "@/lib/email";
+import { getResend } from "@/lib/email";
 import { InvitationEmail } from "@/lib/email/templates/invitation";
 
 const AcceptInvitationSchema = z.object({
@@ -156,7 +156,7 @@ export async function inviteMember(_prev: unknown, formData: FormData) {
 
   const inviteUrl = `${getBaseUrl()}/invite/${token}`;
 
-  const { error: emailError } = await resend.emails.send({
+  const { error: emailError } = await getResend().emails.send({
     from: process.env.EMAIL_FROM || "maturIAté <onboarding@resend.dev>",
     to: parsed.data.email,
     subject: `Invitation à rejoindre ${org.name} — maturIAté`,
@@ -207,7 +207,7 @@ export async function resendInvitation(input: { orgId: string; invitationId: str
 
   const inviteUrl = `${getBaseUrl()}/invite/${newToken}`;
 
-  const { error: emailError } = await resend.emails.send({
+  const { error: emailError } = await getResend().emails.send({
     from: process.env.EMAIL_FROM || "maturIAté <onboarding@resend.dev>",
     to: invitation.email,
     subject: `Invitation à rejoindre ${org.name} — maturIAté`,

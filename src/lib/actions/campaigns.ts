@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { campaigns, teams, diagnostics, teamMembers, memberships, users } from "@/lib/db/schema";
 import { requireRole } from "@/lib/permissions";
-import { resend } from "@/lib/email";
+import { getResend } from "@/lib/email";
 import { CampaignInvitationEmail } from "@/lib/email/templates/campaign-invitation";
 import { CampaignReminderEmail } from "@/lib/email/templates/campaign-reminder";
 import {
@@ -204,7 +204,7 @@ export async function launchCampaign(input: { orgId: string; campaignId: string 
   for (const manager of managers) {
     const diagnosticUrl = `${baseUrl}/orgs/${input.orgId}/diagnostic/${manager.teamId}?campaignId=${input.campaignId}`;
 
-    await resend.emails.send({
+    await getResend().emails.send({
       from: process.env.EMAIL_FROM || "maturIAté <onboarding@resend.dev>",
       to: manager.email,
       subject: `Campagne : ${campaign.name} — Diagnostic en attente`,
@@ -287,7 +287,7 @@ export async function sendCampaignReminders(input: { orgId: string; campaignId: 
   for (const manager of pendingManagers) {
     const diagnosticUrl = `${baseUrl}/orgs/${input.orgId}/diagnostic/${manager.teamId}?campaignId=${input.campaignId}`;
 
-    await resend.emails.send({
+    await getResend().emails.send({
       from: process.env.EMAIL_FROM || "maturIAté <onboarding@resend.dev>",
       to: manager.email,
       subject: `Rappel : ${campaign.name} — Diagnostic en attente`,

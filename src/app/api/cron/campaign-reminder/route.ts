@@ -3,7 +3,7 @@ import { and, eq, gt, lt, isNotNull } from "drizzle-orm";
 
 import { db } from "@/lib/db";
 import { campaigns, teams, diagnostics, teamMembers, memberships, users } from "@/lib/db/schema";
-import { resend } from "@/lib/email";
+import { getResend } from "@/lib/email";
 import { CampaignReminderEmail } from "@/lib/email/templates/campaign-reminder";
 
 export const dynamic = "force-dynamic";
@@ -77,7 +77,7 @@ export async function GET(request: Request) {
     for (const manager of pendingManagers) {
       const diagnosticUrl = `${baseUrl}/orgs/${campaign.orgId}/diagnostic/${manager.teamId}?campaignId=${campaign.id}`;
 
-      await resend.emails.send({
+      await getResend().emails.send({
         from: process.env.EMAIL_FROM || "maturIAté <onboarding@resend.dev>",
         to: manager.email,
         subject: `Rappel : ${campaign.name} — Diagnostic en attente`,
