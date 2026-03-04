@@ -8,7 +8,9 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { memberships, teamMembers, teams } from "@/lib/db/schema";
 import { getTeamDashboardData } from "@/lib/queries/team-dashboard";
+import { listShareLinksByTarget } from "@/lib/queries/share-links";
 import { TeamDashboard } from "@/components/dashboard/team-dashboard";
+import { ShareButton } from "@/components/share/share-button";
 
 export default async function TeamDashboardPage({
   params,
@@ -53,6 +55,11 @@ export default async function TeamDashboardPage({
   if (!data) notFound();
 
   const canStartDiagnostic = role === "admin" || role === "manager";
+  const canShare = role === "admin" || role === "manager" || role === "consultant";
+
+  const teamShareLinks = canShare
+    ? await listShareLinksByTarget(orgId, "team", teamId)
+    : [];
 
   return (
     <div>
@@ -64,7 +71,22 @@ export default async function TeamDashboardPage({
           <ArrowLeft className="size-4" />
           Retour au dashboard
         </Link>
-        <h1 className="text-2xl font-bold">{data.team.name}</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">{data.team.name}</h1>
+          {canShare && (
+            <ShareButton
+              orgId={orgId}
+              type="team"
+              targetId={teamId}
+              existingLinks={teamShareLinks.map((l) => ({
+                id: l.id,
+                token: l.token,
+                expiresAt: l.expiresAt,
+                createdAt: l.createdAt,
+              }))}
+            />
+          )}
+        </div>
       </div>
 
       <TeamDashboard data={data} orgId={orgId} canStartDiagnostic={canStartDiagnostic} />

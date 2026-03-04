@@ -33,7 +33,7 @@ Le système DOIT afficher le dashboard équipe sur la route `/orgs/[orgId]/teams
 
 ### Requirement: Layout du dashboard équipe
 Le système DOIT organiser le dashboard équipe en sections :
-1. En-tête avec le nom de l'équipe, un lien retour vers le dashboard organisation, le score actuel et le niveau de maturité
+1. En-tête avec le nom de l'équipe, un lien retour vers le dashboard organisation, le score actuel, le niveau de maturité, et un bouton de partage (pour les rôles autorisés)
 2. Cartes de résumé (score global actuel, niveau de maturité, tendance, nombre de diagnostics)
 3. Timeline historique des diagnostics
 4. Radar chart comparatif et courbe d'évolution (côte à côte sur desktop, empilés sur mobile)
@@ -82,3 +82,22 @@ Le dashboard équipe DOIT se charger en moins de 2 secondes pour une équipe aya
 #### Scenario: Chargement avec historique conséquent
 - **WHEN** le dashboard est chargé pour une équipe avec 20 diagnostics
 - **THEN** la page est rendue côté serveur en moins de 2 secondes
+
+### Requirement: Bouton de partage dans le dashboard équipe
+Le système DOIT afficher un bouton de partage dans l'en-tête du dashboard équipe pour les utilisateurs autorisés (admin, manager membre de l'équipe, consultant). Le bouton ouvre un dialog permettant de créer un lien de partage, configurer l'expiration, copier le lien, et voir/supprimer les liens existants.
+
+#### Scenario: Admin voit le bouton de partage
+- **WHEN** un admin accède au dashboard équipe
+- **THEN** un bouton "Partager" est visible dans l'en-tête du dashboard
+
+#### Scenario: Manager membre voit le bouton de partage
+- **WHEN** un manager membre de l'équipe accède au dashboard équipe
+- **THEN** un bouton "Partager" est visible dans l'en-tête du dashboard
+
+#### Scenario: Member ne voit pas le bouton de partage
+- **WHEN** un member accède au dashboard équipe
+- **THEN** le bouton "Partager" n'est pas affiché
+
+#### Scenario: Ouverture du dialog de partage
+- **WHEN** un utilisateur autorisé clique sur le bouton "Partager"
+- **THEN** un dialog s'ouvre avec l'option de créer un nouveau lien, configurer l'expiration, et la liste des liens existants pour cette équipe
