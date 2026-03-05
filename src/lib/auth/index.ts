@@ -43,13 +43,17 @@ export const auth = betterAuth({
         const from = process.env.EMAIL_FROM || "maturIAté <onboarding@resend.dev>";
         console.log("[Magic Link] Envoi vers:", email, "from:", from, "RESEND_API_KEY set:", !!process.env.RESEND_API_KEY);
         try {
-          const result = await getResend().emails.send({
+          const { data, error } = await getResend().emails.send({
             from,
             to: email,
             subject: "Votre lien de connexion — maturIAté",
             react: MagicLinkEmail({ url }),
           });
-          console.log("[Magic Link] Email envoyé:", JSON.stringify(result));
+          if (error) {
+            console.error("[Magic Link] Resend error:", JSON.stringify(error));
+            throw new Error(`Resend error: ${error.message}`);
+          }
+          console.log("[Magic Link] Email envoyé:", JSON.stringify(data));
         } catch (error) {
           console.error("[Magic Link] Erreur envoi email:", error);
           throw error;
