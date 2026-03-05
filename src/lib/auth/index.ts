@@ -40,9 +40,11 @@ export const auth = betterAuth({
   plugins: [
     magicLink({
       sendMagicLink: async ({ email, url }) => {
+        const from = process.env.EMAIL_FROM || "maturIAté <onboarding@resend.dev>";
+        console.log("[Magic Link] Envoi vers:", email, "from:", from, "RESEND_API_KEY set:", !!process.env.RESEND_API_KEY);
         try {
           const result = await getResend().emails.send({
-            from: process.env.EMAIL_FROM || "maturIAté <onboarding@resend.dev>",
+            from,
             to: email,
             subject: "Votre lien de connexion — maturIAté",
             react: MagicLinkEmail({ url }),
