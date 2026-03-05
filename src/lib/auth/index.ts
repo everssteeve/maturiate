@@ -24,6 +24,11 @@ if (process.env.MICROSOFT_CLIENT_ID && process.env.MICROSOFT_CLIENT_SECRET) {
 }
 
 export const auth = betterAuth({
+  trustedOrigins: process.env.NODE_ENV === "development"
+    ? ["http://localhost:3000", "http://localhost:3001"]
+    : process.env.BETTER_AUTH_URL
+      ? [process.env.BETTER_AUTH_URL]
+      : [],
   database: drizzleAdapter(db, {
     provider: "pg",
     schema,
@@ -35,12 +40,18 @@ export const auth = betterAuth({
   plugins: [
     magicLink({
       sendMagicLink: async ({ email, url }) => {
-        await getResend().emails.send({
-          from: process.env.EMAIL_FROM || "maturIAté <onboarding@resend.dev>",
-          to: email,
-          subject: "Votre lien de connexion — maturIAté",
-          react: MagicLinkEmail({ url }),
-        });
+        try {
+          const result = await getResend().emails.send({
+            from: process.env.EMAIL_FROM || "maturIAté <onboarding@resend.dev>",
+            to: email,
+            subject: "Votre lien de connexion — maturIAté",
+            react: MagicLinkEmail({ url }),
+          });
+          console.log("[Magic Link] Email envoyé:", JSON.stringify(result));
+        } catch (error) {
+          console.error("[Magic Link] Erreur envoi email:", error);
+          throw error;
+        }
       },
       expiresIn: 600,
     }),
