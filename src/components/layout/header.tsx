@@ -2,10 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
-import { LogOut, User, Briefcase } from "lucide-react";
+import { useParams } from "next/navigation";
+import { LogOut, User, Briefcase, LayoutDashboard, Building2 } from "lucide-react";
 
-import { signOut, useSession } from "@/lib/auth/client";
+import { useSession } from "@/lib/auth/client";
+import { signOutAction } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -46,25 +47,15 @@ function UserAvatar({ name, image }: { name: string; image?: string | null }) {
 interface HeaderProps {
   organizations?: { id: string; name: string; logo: string | null }[];
   isConsultant?: boolean;
+  user?: { name: string; email: string; image?: string | null } | null;
 }
 
-export function Header({ organizations, isConsultant }: HeaderProps) {
-  const router = useRouter();
+export function Header({ organizations, isConsultant, user: userProp }: HeaderProps) {
   const params = useParams();
   const { data: session } = useSession();
 
-  const user = session?.user;
+  const user = userProp ?? session?.user;
   const orgId = params?.orgId as string | undefined;
-
-  async function handleSignOut() {
-    await signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          router.push("/login");
-        },
-      },
-    });
-  }
 
   return (
     <header className="border-b bg-background">
@@ -103,15 +94,33 @@ export function Header({ organizations, isConsultant }: HeaderProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem onClick={() => router.push("/profile")}>
-                <User className="mr-2 size-4" />
-                Mon profil
+              <DropdownMenuItem asChild>
+                <Link href="/">
+                  <LayoutDashboard className="mr-2 size-4" />
+                  Tableau de bord
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/orgs">
+                  <Building2 className="mr-2 size-4" />
+                  Mes organisations
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/profile">
+                  <User className="mr-2 size-4" />
+                  Mon profil
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleSignOut}>
-                <LogOut className="mr-2 size-4" />
-                Se déconnecter
-              </DropdownMenuItem>
+              <form action={signOutAction}>
+                <DropdownMenuItem asChild>
+                  <button type="submit" className="w-full">
+                    <LogOut className="mr-2 size-4" />
+                    Se déconnecter
+                  </button>
+                </DropdownMenuItem>
+              </form>
             </DropdownMenuContent>
           </DropdownMenu>
         )}

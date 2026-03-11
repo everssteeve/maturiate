@@ -17,9 +17,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   const isConsultant = userOrgs.some((o) => o.role === "consultant");
 
+  const user = session
+    ? { name: session.user.name, email: session.user.email, image: session.user.image }
+    : null;
+
   return (
     <div className="min-h-screen bg-background">
-      <Header organizations={organizations} isConsultant={isConsultant} />
+      <Header organizations={organizations} isConsultant={isConsultant} user={user} />
       <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6">{children}</main>
     </div>
   );

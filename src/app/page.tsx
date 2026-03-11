@@ -28,5 +28,11 @@ export default async function Home() {
 
   const summary = await getHomepageSummary(session.user.id);
 
-  return <AuthenticatedHomepage summary={summary} />;
+  const user = {
+    name: session.user.name,
+    email: session.user.email,
+    image: session.user.image,
+  };
+
+  return <AuthenticatedHomepage summary={summary} user={user} />;
 }

@@ -1,23 +1,24 @@
-import { PublicHeader } from "@/components/public-header";
+import { Header } from "@/components/layout/header";
 import { OrgSummaryCard } from "@/components/homepage/org-summary-card";
 import { EmptyState } from "@/components/homepage/empty-state";
 import type { HomepageSummary } from "@/lib/queries/homepage";
 
 interface AuthenticatedHomepageProps {
   summary: HomepageSummary;
+  user: { name: string; email: string; image?: string | null };
 }
 
-export function AuthenticatedHomepage({ summary }: AuthenticatedHomepageProps) {
+export function AuthenticatedHomepage({ summary, user }: AuthenticatedHomepageProps) {
   return (
     <div className="min-h-screen bg-background">
-      <PublicHeader isAuthenticated />
+      <Header user={user} />
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
         {summary.organizations.length === 0 ? (
           <EmptyState />
         ) : (
           <>
             <h1 className="text-2xl font-bold tracking-tight">
-              Mes organisations
+              Tableau de bord
             </h1>
             <p className="mt-1 text-muted-foreground">
               Vue d&apos;ensemble de vos organisations et actions en attente.

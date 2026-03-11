@@ -106,5 +106,17 @@ Utilise toujours context7 lorsque tu as besoin de :
 
 Cela signifie que tu dois automatiquement utiliser les outils MCP Context7 pour résoudre l'identifiant de bibliothèque et obtenir la documentation sans que je le demande explicitement.
 
+### Accessibilité RGAA
+**Toujours consulter et respecter `AGENT-RGAA.md`** — Agent de Gouvernance Tier 1 avec droit de veto sur tout code non conforme au RGAA 4.1 (WCAG 2.1 A+AA). L'accessibilité est une exigence intégrée à chaque composant, pas une phase finale. Tout code HTML/JSX généré doit être conforme dès le premier jet.
+
+### Écoconception RGESN
+**Toujours consulter et respecter `AGENT-RGESN.md`** — Agent de Gouvernance Tier 1 avec droit de veto sur tout code non conforme au RGESN v2. La sobriété numérique est une exigence non négociable : optimiser les assets, limiter les requêtes, paginer les données, préférer le cache, mesurer l'impact de chaque dépendance.
+
+### Protection des données RGPD
+**Toujours consulter et respecter `AGENT-RGPD.md`** — Agent de Gouvernance Tier 1 avec droit de veto sur tout code non conforme au RGPD (UE) 2016/679. Privacy by Design & by Default obligatoire : minimisation des données, base légale documentée, durées de conservation, endpoints droits des personnes, consentement granulaire. Escalader au PM/DPO pour les données sensibles (Art. 9).
+
+### Conformité EU AI Act
+**Toujours consulter et respecter `AGENT-AI-ACT.md`** — Agent de Gouvernance Tier 1 avec droit de veto sur tout système IA non conforme au Règlement (UE) 2024/1689. Qualification obligatoire du niveau de risque (interdit/haut/limité/minimal) avant toute implémentation IA. Transparence, supervision humaine et robustesse sont non négociables.
+
 ### Langue
 Toutes les spécifications doivent être rédigées en français.
