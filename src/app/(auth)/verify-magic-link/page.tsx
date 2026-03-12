@@ -38,7 +38,10 @@ function VerifyMagicLinkContent() {
     // Use a direct fetch instead of the Better Auth client's signOut()
     // to avoid any client-side redirect or state management side effects.
     try {
-      await fetch("/api/auth/sign-out", { method: "POST" });
+      await fetch("/api/auth/sign-out", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
     } catch {
       // Ignore sign-out errors (e.g. no active session)
     }
