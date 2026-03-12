@@ -3,8 +3,6 @@
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 
-import { signOut } from "@/lib/auth/client";
-
 function VerifyMagicLinkContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -37,16 +35,10 @@ function VerifyMagicLinkContent() {
     setLoading(true);
     // Sign out any existing session before verifying the new magic link
     // to prevent being logged in as the wrong account.
-    // Use fetchOptions.onSuccess to prevent Better Auth's default redirect
-    // which would navigate away before we reach the verify URL.
+    // Use a direct fetch instead of the Better Auth client's signOut()
+    // to avoid any client-side redirect or state management side effects.
     try {
-      await signOut({
-        fetchOptions: {
-          onSuccess: () => {
-            // Intentionally empty — prevent default redirect to "/"
-          },
-        },
-      });
+      await fetch("/api/auth/sign-out", { method: "POST" });
     } catch {
       // Ignore sign-out errors (e.g. no active session)
     }
