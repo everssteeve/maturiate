@@ -151,7 +151,7 @@ export async function inviteMember(_prev: unknown, formData: FormData) {
     expiresAt,
   });
 
-  const inviteUrl = `${getBaseUrl()}/invite/${token}`;
+  const inviteUrl = `${getBaseUrl()}/verify-invite?token=${token}`;
 
   const { error: emailError } = await getResend().emails.send({
     from: process.env.EMAIL_FROM || "maturIAté <onboarding@resend.dev>",
@@ -202,7 +202,7 @@ export async function resendInvitation(input: { orgId: string; invitationId: str
     .set({ token: newToken, expiresAt: newExpiresAt })
     .where(eq(invitations.id, parsed.invitationId));
 
-  const inviteUrl = `${getBaseUrl()}/invite/${newToken}`;
+  const inviteUrl = `${getBaseUrl()}/verify-invite?token=${newToken}`;
 
   const { error: emailError } = await getResend().emails.send({
     from: process.env.EMAIL_FROM || "maturIAté <onboarding@resend.dev>",
