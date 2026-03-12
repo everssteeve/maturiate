@@ -13,6 +13,7 @@ import { invitations, memberships, organizations, users } from "@/lib/db/schema"
 import { requireRole } from "@/lib/permissions";
 import { getResend } from "@/lib/email";
 import { InvitationEmail } from "@/lib/email/templates/invitation";
+import { getBaseUrl } from "@/lib/utils";
 
 const AcceptInvitationSchema = z.object({
   token: z.string().min(1),
@@ -82,10 +83,6 @@ const InviteMemberSchema = z.object({
 
 function generateToken() {
   return crypto.randomBytes(32).toString("hex");
-}
-
-function getBaseUrl() {
-  return process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 }
 
 export async function inviteMember(_prev: unknown, formData: FormData) {

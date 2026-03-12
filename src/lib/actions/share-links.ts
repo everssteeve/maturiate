@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { shareLinks, teamMembers, teams } from "@/lib/db/schema";
 import { requireRole } from "@/lib/permissions";
+import { getBaseUrl } from "@/lib/utils";
 import {
   CreateShareLinkSchema,
   DeleteShareLinkSchema,
@@ -59,8 +60,7 @@ export async function createShareLink(input: {
     expiresAt: parsed.expiresAt ?? null,
   });
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  const shareUrl = `${baseUrl}/share/${token}`;
+  const shareUrl = `${getBaseUrl()}/share/${token}`;
 
   revalidatePath(`/orgs/${parsed.orgId}`);
   return { success: true, shareUrl, token };

@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { campaigns, teams, diagnostics, teamMembers, memberships, users } from "@/lib/db/schema";
 import { getResend } from "@/lib/email";
 import { CampaignReminderEmail } from "@/lib/email/templates/campaign-reminder";
+import { getBaseUrl } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -30,7 +31,7 @@ export async function GET(request: Request) {
       ),
     );
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const baseUrl = getBaseUrl();
   let totalSent = 0;
 
   for (const campaign of dueSoonCampaigns) {

@@ -14,6 +14,7 @@ import {
   CreateCampaignSchema,
   UpdateCampaignSchema,
 } from "@/lib/validations/campaigns";
+import { getBaseUrl } from "@/lib/utils";
 
 // ── Helpers ──────────────────────────────────────
 
@@ -23,10 +24,6 @@ function formatDate(date: Date): string {
     month: "long",
     year: "numeric",
   });
-}
-
-function getBaseUrl(): string {
-  return process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 }
 
 async function getTeamManagers(orgId: string) {
