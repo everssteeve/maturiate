@@ -41,6 +41,7 @@ function VerifyMagicLinkContent() {
       await fetch("/api/auth/sign-out", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
       });
     } catch {
       // Ignore sign-out errors (e.g. no active session)
