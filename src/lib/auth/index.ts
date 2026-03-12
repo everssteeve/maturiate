@@ -24,12 +24,17 @@ if (process.env.MICROSOFT_CLIENT_ID && process.env.MICROSOFT_CLIENT_SECRET) {
   };
 }
 
-export const auth = betterAuth({
-  trustedOrigins: process.env.NODE_ENV === "development"
+const trustedOrigins =
+  process.env.NODE_ENV === "development"
     ? ["http://localhost:3000", "http://localhost:3001"]
-    : process.env.BETTER_AUTH_URL
-      ? [process.env.BETTER_AUTH_URL]
-      : [],
+    : [
+        process.env.BETTER_AUTH_URL,
+        process.env.NEXT_PUBLIC_APP_URL,
+      ].filter((url): url is string => !!url);
+
+export const auth = betterAuth({
+  baseURL: process.env.BETTER_AUTH_URL,
+  trustedOrigins,
   database: drizzleAdapter(db, {
     provider: "pg",
     schema,
