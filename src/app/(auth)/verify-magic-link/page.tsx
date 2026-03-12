@@ -36,9 +36,17 @@ function VerifyMagicLinkContent() {
   async function handleClick() {
     setLoading(true);
     // Sign out any existing session before verifying the new magic link
-    // to prevent being logged in as the wrong account
+    // to prevent being logged in as the wrong account.
+    // Use fetchOptions.onSuccess to prevent Better Auth's default redirect
+    // which would navigate away before we reach the verify URL.
     try {
-      await signOut();
+      await signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            // Intentionally empty — prevent default redirect to "/"
+          },
+        },
+      });
     } catch {
       // Ignore sign-out errors (e.g. no active session)
     }
