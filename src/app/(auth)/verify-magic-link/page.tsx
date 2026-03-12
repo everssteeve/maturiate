@@ -3,6 +3,8 @@
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 
+import { signOut } from "@/lib/auth/client";
+
 function VerifyMagicLinkContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -31,8 +33,15 @@ function VerifyMagicLinkContent() {
 
   const verifyUrl = `/api/auth/magic-link/verify?token=${encodeURIComponent(token)}&callbackURL=${encodeURIComponent(callbackURL)}`;
 
-  function handleClick() {
+  async function handleClick() {
     setLoading(true);
+    // Sign out any existing session before verifying the new magic link
+    // to prevent being logged in as the wrong account
+    try {
+      await signOut();
+    } catch {
+      // Ignore sign-out errors (e.g. no active session)
+    }
     window.location.href = verifyUrl;
   }
 
