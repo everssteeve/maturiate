@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import * as schema from "@/lib/db/schema";
 import { getResend } from "@/lib/email";
 import { MagicLinkEmail } from "@/lib/email/templates/magic-link";
+import { getBaseUrl } from "@/lib/utils";
 
 const socialProviders: Record<string, { clientId: string; clientSecret: string }> = {};
 
@@ -41,13 +42,19 @@ export const auth = betterAuth({
     magicLink({
       sendMagicLink: async ({ email, url }) => {
         const from = process.env.EMAIL_FROM || "maturIAté <onboarding@resend.dev>";
+        // Redirect through intermediate page to prevent Microsoft Defender
+        // Safe Links from consuming the one-time token
+        const parsed = new URL(url);
+        const token = parsed.searchParams.get("token") || "";
+        const callbackURL = parsed.searchParams.get("callbackURL") || "/orgs";
+        const intermediateUrl = `${getBaseUrl()}/verify-magic-link?token=${encodeURIComponent(token)}&callbackURL=${encodeURIComponent(callbackURL)}`;
         console.log("[Magic Link] Envoi vers:", email, "from:", from, "RESEND_API_KEY set:", !!process.env.RESEND_API_KEY);
         try {
           const { data, error } = await getResend().emails.send({
             from,
             to: email,
             subject: "Votre lien de connexion — maturIAté",
-            react: MagicLinkEmail({ url }),
+            react: MagicLinkEmail({ url: intermediateUrl }),
           });
           if (error) {
             console.error("[Magic Link] Resend error:", JSON.stringify(error));
