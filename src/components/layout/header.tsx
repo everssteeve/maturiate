@@ -61,7 +61,7 @@ export function Header({ organizations, isConsultant, user: userProp }: HeaderPr
     <header className="border-b bg-background">
       <div className="flex h-14 items-center justify-between px-4 sm:px-6">
         <div className="flex items-center gap-3">
-          <Link href="/orgs" className="text-lg font-bold tracking-tight">
+          <Link href="/" className="text-lg font-bold tracking-tight">
             maturIAté
           </Link>
 
