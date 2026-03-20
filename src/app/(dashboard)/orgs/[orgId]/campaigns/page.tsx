@@ -27,7 +27,8 @@ export default async function CampaignsPage({
   params: Promise<{ orgId: string }>;
 }) {
   const { orgId } = await params;
-  await requireRole(orgId, "admin");
+  const { membership } = await requireRole(orgId, "admin", "manager", "consultant");
+  const isAdmin = membership.role === "admin";
 
   const campaignsList = await listCampaigns(orgId);
 
@@ -35,27 +36,32 @@ export default async function CampaignsPage({
     <div>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Campagnes</h1>
-        <Button asChild>
-          <Link href={`/orgs/${orgId}/campaigns/new`}>
-            <Plus className="mr-2 size-4" />
-            Nouvelle campagne
-          </Link>
-        </Button>
+        {isAdmin && (
+          <Button asChild>
+            <Link href={`/orgs/${orgId}/campaigns/new`}>
+              <Plus className="mr-2 size-4" />
+              Nouvelle campagne
+            </Link>
+          </Button>
+        )}
       </div>
 
       {campaignsList.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
             <p className="text-muted-foreground">
-              Aucune campagne. Créez votre première campagne pour collecter les diagnostics de vos
-              équipes.
+              {isAdmin
+                ? "Aucune campagne. Créez votre première campagne pour collecter les diagnostics de vos équipes."
+                : "Aucune campagne pour le moment."}
             </p>
-            <Button asChild className="mt-4">
-              <Link href={`/orgs/${orgId}/campaigns/new`}>
-                <Plus className="mr-2 size-4" />
-                Créer une campagne
-              </Link>
-            </Button>
+            {isAdmin && (
+              <Button asChild className="mt-4">
+                <Link href={`/orgs/${orgId}/campaigns/new`}>
+                  <Plus className="mr-2 size-4" />
+                  Créer une campagne
+                </Link>
+              </Button>
+            )}
           </CardContent>
         </Card>
       ) : (

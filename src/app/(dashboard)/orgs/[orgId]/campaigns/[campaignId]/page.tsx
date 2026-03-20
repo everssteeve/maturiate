@@ -30,7 +30,8 @@ export default async function CampaignDetailPage({
   params: Promise<{ orgId: string; campaignId: string }>;
 }) {
   const { orgId, campaignId } = await params;
-  await requireRole(orgId, "admin");
+  const { membership } = await requireRole(orgId, "admin", "manager", "consultant");
+  const isAdmin = membership.role === "admin";
 
   const detail = await getCampaignDetail(campaignId, orgId);
   if (!detail) notFound();
@@ -60,13 +61,15 @@ export default async function CampaignDetailPage({
             {campaign.endDate && ` — ${formatDate(campaign.endDate)}`}
           </p>
         </div>
-        <CampaignActions
-          orgId={orgId}
-          campaignId={campaignId}
-          status={campaign.status}
-          hasTeams={totalTeams > 0}
-          allResponded={respondedTeams === totalTeams && totalTeams > 0}
-        />
+        {isAdmin && (
+          <CampaignActions
+            orgId={orgId}
+            campaignId={campaignId}
+            status={campaign.status}
+            hasTeams={totalTeams > 0}
+            allResponded={respondedTeams === totalTeams && totalTeams > 0}
+          />
+        )}
       </div>
 
       {campaign.status !== "draft" && (
